@@ -1,66 +1,102 @@
-# Phase 2 Project
+![image](Images/skyline.jpg)
 
-Another module down--you're almost half way there!
+# King's County Housing Analysis
 
-![awesome](https://raw.githubusercontent.com/learn-co-curriculum/dsc-phase-2-project-campus/master/halfway-there.gif)
+In this project I'm going to analyze the King's County housing data set listing various data points for property sales in the King's County area of Washington (centered around Seattle). I will be using Linear Regression to identify the most influential variables in maximizing sale price. For the purposes of this exercise, I will be working from the position as a consultant to a hypothetical housing developer in the Seattle area. I will be using the OSEMN (Obtain, Scrub, Explore, Model, Interpret) Data Science process in this project.
 
-All that remains in Phase 2 is to put our newfound data science skills to use with a large project! This project should take 20 to 30 hours to complete.
+## The Business Problem
 
-## Project Overview
+The King's County data shows various metrics for houses that sold to homebuyers in 2014 and 2015. As a consultant, my task is to identify the greatest factors that increase the sale price of homes so the developer can maximize sale price of their new housing construction projects. Such factors might include: where to build the new homes, how much land they should have, the overall quality of the construction, the size of the home, etc.
 
-For this project, you will use regression modeling to analyze house sales in a northwestern county.
+## The OSMEN Process
 
-### The Data
+For this project, I will follow the OSEMN process of data science inquiry. It is split into five stages which include:
 
-This project uses the King County House Sales dataset, which can be found in  `kc_house_data.csv` in the data folder in this repo. The description of the column names can be found in `column_names.md` in the same folder. As with most real world data sets, the column names are not perfectly described, so you'll have to do some research or use your best judgment if you have questions about what the data means.
+1. Obtain
+2. Scrub
+3. Explore
+4. Model
+5. Interpret
 
-It is up to you to decide what data from this dataset to use and how to use it. If you are feeling overwhelmed or behind, we recommend you ignore some or all of the following features:
+For step one, Obtain, I've been provided the data, but for scrubbing and exploring the data, I have my analysis below:
 
-* date
-* view
-* sqft_above
-* sqft_basement
-* yr_renovated
-* zipcode
-* lat
-* long
-* sqft_living15
-* sqft_lot15
+## The Data
 
-### Business Problem
+The raw housing data contains the following columns:
 
-It is up to you to define a stakeholder and business problem appropriate to this dataset.
+- **Id** - The index of house in the data set
+- **Date** - The date of the house's sale
+- **Price** - The final price of the home at the time of sale
+- **Bedrooms** - The number of bedrooms in the house
+- **Bathrooms** - The number of bathrooms in the house (a decimal to account for toilet-only bathrooms etc.)
+- **sqft_living** - The square footage of the living area
+- **sqft_lot** - The size of building's plot of land
+- **Floors** - The number of floors in the house (half counts for an attic)
+- **Waterfront** - A binary value indicating if the house has a waterfront view.
+- **View** - How many times the home was viewed before it sold
+- **Condition** - The overall condition grade of the home
+- **Grade** - The overall quality grade of the home
+- **sqft_above** - The square footage of the home above ground
+- **sqft_basement** - The square footage of the basement
+- **yr_built** - The year the home was built
+- **yr_renovated** - The year the home was renovated
+- **zipcode** - The zipcode of the home
+- **lat** - The house's latitude
+- **long** - The house's longitude
+- **sqft_living15** - The average square footage of the interiors of the nearest 15 neighbors
+- **sqft_lot15** - The avergae square footage of the lots of the nearest 15 neighbors.
 
-If you are struggling to define a stakeholder, we recommend you complete a project for a real estate agency that helps homeowners buy and/or sell homes. A business problem you could focus on for this stakeholder is the need to provide advice to homeowners about how home renovations might increase the estimated value of their homes, and by what amount.
+I cleaned the data and dropped any pieces of information that are either incompatible with a linear model or not applicable to the business problem.
 
-## Deliverables
+Here is a heatmap of the data around the Seattle area:
 
-There are three deliverables for this project:
+![heatmap](Images/heatmap.png)
 
-* A **GitHub repository**
-* A **Jupyter Notebook**
-* A **non-technical presentation**
+## Baseline Model
 
-Review the "Project Submission & Review" page in the "Milestones Instructions" topic for instructions on creating and submitting your deliverables. Refer to the rubric associated with this assignment for specifications describing high-quality deliverables.
+For my baseline model, after I cleaned the columns for null and outlier values, I divided my data into continuous, categorical and outcome data, but for the purpose of this first model, categorical and continuous variables will both be treated as continuous. My outcome, price, is the success metric. Predictably, this model was poorly fit to the data. Below you can see the residuals show strong heteroscedasticity and the residuals do not follow a normal distribution:
 
-### Key Points
+![baseline](Images/baseline_model.png)
 
-* **Your deliverables should explicitly address each step of the data science process.** Refer to [the Data Science Process lesson](https://github.com/learn-co-curriculum/dsc-data-science-processes) from Topic 19 for more information about process models you can use.
+### Analysis
+As we can see the R2 score is 0.697 for the training data and 0.677 for the testing data. This means this model can account for about 68% of the testing data's variance. In practice, this means that our outcome data has an error of around $130,000, which isn't particularly helpful.
 
-* **Your Jupyter Notebook should demonstrate an iterative approach to modeling.** This means that you begin with a basic model, evaluate it, and then provide justification for and proceed to a new model. After you finish refining your models, you should provide 1-3 paragraphs discussing your final model - this should include interpreting at least 3 important parameter estimates or statistics.
+In addition to that, the test data has a worse fit than the training data, meaning that the model is slightly over-fit. We can do a lot better. From the residuals plots, we can see the data has strong heteroscedasticity, due to the 'funnel' shape of the residuals scatter plot. Lastly, the histogram has strong skew and kurtosis.
 
-* **Based on the results of your models, your notebook and presentation should discuss at least two features that have strong relationships with housing prices.**
+## Process
 
-## Getting Started
+Using my baseline model as a guide, I reiterated this process with the following steps:
 
-Start on this project by forking and cloning [this project repository](https://github.com/learn-co-curriculum/dsc-phase-2-project) to get a local copy of the dataset.
+1. Log Transformation
+2. One-Hot-Encoding Categoricals
+3. Handled Variable Interactions and Correlation
+4. Sorted Zipcodes by township
+5. Scaled the data
 
-We recommend structuring your project repository similar to the structure in [the Phase 1 Project Template](https://github.com/learn-co-curriculum/dsc-project-template). You can do this either by creating a new fork of that repository to work in or by building a new repository from scratch that mimics that structure.
+My final model used a combination of every one of these alterations listed. The final model has the following residuals and R2 score:
 
-## Project Submission and Review
+![residuals](Images/final_model.png)
 
-Review the "Project Submission & Review" page in the "Milestones Instructions" topic to learn how to submit your project and how it will be reviewed. Your project must pass review for you to progress to the next Phase.
+Our final R2 score came to 0.806, meaning that it can account for 80.6% of the data's variance. Our Mean Absolute Error is around $100,000, so the model won't be able to effectively predict the final dollar amount of a property sale, but we can infer the most important factors involved in calculating the price.
 
-## Summary
+## Conclusions and Interpretation
 
-This project will give you a valuable opportunity to develop your data science skills using real-world data. The end-of-phase projects are a critical part of the program because they give you a chance to bring together all the skills you've learned, apply them to realistic projects for a business stakeholder, practice communication skills, and get feedback to help you improve. You've got this!
+Because the data in this model are scaled, we can interpret their importance to affecting the model's output by the size of their coefficients. The following are the most influential factors in my model:
+
+1. Square foot of living area (0.43)
+2. If the proprerty is in Medina (0.214)
+3. How far north the property is (0.153)
+4. If the property has a waterfront view (0.148)
+5. If the property is in Mercer (0.128)
+
+In order for this hypothetical development company to maximize its housing prices, they should look to build large homes in Media or Mercer, preferably on the waterfront. This makes sense, especially if we look at a heatmap of the property sales for the top 1% of houses based on dollar cost per square foot:
+
+![heatmap_top_1_percent](Images/top_1_percent.png)
+
+Medina is, coincidentally (or probably not), the township that contains Bill Gates' mansion as well as the luxury homes of a number of other tech executives in Seattle area. It would make sense that their land is extremely costly.
+
+![medina](Images/medina.jpg)
+
+## Areas of Further Study
+
+This model has a lot of room for improvement. Several areas of exploration would be to restrict the geography to a small area of Seattle. One thing we must also account for in the real life version of this exercise, is that while scoring some development space in Medina would be incredibly profitable for a developer, since only 50 homes sold in that township in 2 years, it might not be feasible to focus the company's energy on developing property in that area, as almost all land is probably already developed. A more interesting exercise would be to identify areas of Seattle where housing prices are increasing and possibly predict which neighborhoods will be ideal for development in the future. Granted, with Seattle's history of gentrification, this has numerous political factors to consider as well.
